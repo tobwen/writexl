@@ -88,11 +88,10 @@ SEXP C_write_data_frame_list(SEXP df_list, SEXP file, SEXP col_names, SEXP forma
   lxw_format * datetime = workbook_add_format(workbook);
   format_set_num_format(datetime, "yyyy-mm-dd HH:mm:ss UTC");
 
-  //how to format headers (bold + center)
+  //how to format headers (bold)
   lxw_format * title = workbook_add_format(workbook);
   format_set_bold(title);
-  format_set_align(title, LXW_ALIGN_CENTER);
-
+  
   //how to format hyperlinks (underline + blue)
   lxw_format * hyperlink = workbook_add_format(workbook);
   format_set_underline(hyperlink, LXW_UNDERLINE_SINGLE);
@@ -127,7 +126,7 @@ SEXP C_write_data_frame_list(SEXP df_list, SEXP file, SEXP col_names, SEXP forma
     size_t cols = Rf_length(df);
     size_t rows = 0;
 
-    // determinte how to format each column
+    // determinte how to format each column (with hacks for date/datetime columns)
     R_COL_TYPE coltypes[cols];
     for(size_t i = 0; i < cols; i++){
       SEXP COL = VECTOR_ELT(df, i);
@@ -135,9 +134,9 @@ SEXP C_write_data_frame_list(SEXP df_list, SEXP file, SEXP col_names, SEXP forma
       if(!Rf_isMatrix(COL) && !Rf_inherits(COL, "data.frame"))
         rows = max(rows, Rf_length(COL));
       if(coltypes[i] == COL_DATE)
-        assert_lxw(worksheet_set_column(sheet, i, i, 20, date));
+        assert_lxw(worksheet_set_column(sheet, i, i, LXW_DEF_COL_WIDTH + 1e-6, date));
       if(coltypes[i] == COL_POSIXCT)
-        assert_lxw(worksheet_set_column(sheet, i, i, 20, datetime));
+        assert_lxw(worksheet_set_column(sheet, i, i, LXW_DEF_COL_WIDTH + 1e-6, datetime));
       if(coltypes[i] == COL_UNKNOWN)
         Rf_warning("Column '%s' has unrecognized data type.", CHAR(STRING_ELT(names, i)));
     }
@@ -204,6 +203,12 @@ SEXP C_write_data_frame_list(SEXP df_list, SEXP file, SEXP col_names, SEXP forma
       }
       cursor++;
     }
+
+    //freeze first row
+    worksheet_freeze_panes(sheet, 1, 0);
+    
+    //set active column to A2
+    worksheet_set_selection(sheet, 1, 0, 1, 0); 
   }
 
   //this both writes the xlsx file and frees the memory

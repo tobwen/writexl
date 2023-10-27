@@ -2528,6 +2528,8 @@ _worksheet_write_sheet_format_pr(lxw_worksheet *self)
     if (self->excel_version == 2010)
         LXW_PUSH_ATTRIBUTES_STR("x14ac:dyDescent", "0.25");
 
+    LXW_PUSH_ATTRIBUTES_INT("baseColWidth", 10);
+
     lxw_xml_empty_tag(self->file, "sheetFormatPr", &attributes);
 
     LXW_FREE_ATTRIBUTES();
@@ -4905,7 +4907,6 @@ _worksheet_write_col_info(lxw_worksheet *self, lxw_col_options *options)
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_INT("min", 1 + options->firstcol);
     LXW_PUSH_ATTRIBUTES_INT("max", 1 + options->lastcol);
-    LXW_PUSH_ATTRIBUTES_DBL("width", width);
 
     if (xf_index)
         LXW_PUSH_ATTRIBUTES_INT("style", xf_index);
@@ -4913,8 +4914,10 @@ _worksheet_write_col_info(lxw_worksheet *self, lxw_col_options *options)
     if (options->hidden)
         LXW_PUSH_ATTRIBUTES_STR("hidden", "1");
 
-    if (has_custom_width)
+    if (has_custom_width) {
         LXW_PUSH_ATTRIBUTES_STR("customWidth", "1");
+        LXW_PUSH_ATTRIBUTES_DBL("width", width);
+    }
 
     if (options->level)
         LXW_PUSH_ATTRIBUTES_INT("outlineLevel", options->level);

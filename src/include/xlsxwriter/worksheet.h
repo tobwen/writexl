@@ -71,13 +71,13 @@
 #define LXW_BREAKS_MAX        1023
 
 /** Default Excel column width in character units. */
-#define LXW_DEF_COL_WIDTH (double)8.43
+#define LXW_DEF_COL_WIDTH (double)10.71
 
 /** Default Excel column height in character units. */
 #define LXW_DEF_ROW_HEIGHT (double)15.0
 
 /** Default Excel column width in pixels. */
-#define LXW_DEF_COL_WIDTH_PIXELS 64
+#define LXW_DEF_COL_WIDTH_PIXELS ((int)(LXW_DEF_COL_WIDTH * 7 + 5))
 
 /** Default Excel column height in pixels. */
 #define LXW_DEF_ROW_HEIGHT_PIXELS 20
