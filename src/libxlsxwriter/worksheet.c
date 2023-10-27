@@ -1922,6 +1922,8 @@ _worksheet_write_sheet_format_pr(lxw_worksheet *self)
     if (self->excel_version == 2010)
         LXW_PUSH_ATTRIBUTES_STR("x14ac:dyDescent", "0.25");
 
+    LXW_PUSH_ATTRIBUTES_INT("baseColWidth", 10);
+
     lxw_xml_empty_tag(self->file, "sheetFormatPr", &attributes);
 
     LXW_FREE_ATTRIBUTES();

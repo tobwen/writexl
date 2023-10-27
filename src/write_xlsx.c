@@ -88,11 +88,10 @@ SEXP C_write_data_frame_list(SEXP df_list, SEXP file, SEXP col_names, SEXP forma
   lxw_format * datetime = workbook_add_format(workbook);
   format_set_num_format(datetime, "yyyy-mm-dd HH:mm:ss UTC");
 
-  //how to format headers (bold + center)
+  //how to format headers (bold)
   lxw_format * title = workbook_add_format(workbook);
   format_set_bold(title);
-  format_set_align(title, LXW_ALIGN_CENTER);
-
+  
   //how to format hyperlinks (underline + blue)
   lxw_format * hyperlink = workbook_add_format(workbook);
   format_set_underline(hyperlink, LXW_UNDERLINE_SINGLE);
@@ -201,6 +200,12 @@ SEXP C_write_data_frame_list(SEXP df_list, SEXP file, SEXP col_names, SEXP forma
       }
       cursor++;
     }
+
+    //freeze first row
+    worksheet_freeze_panes(sheet, 1, 0);
+    
+    //set active column to A2
+    worksheet_set_selection(sheet, 1, 0, 1, 0); 
   }
 
   //this both writes the xlsx file and frees the memory
